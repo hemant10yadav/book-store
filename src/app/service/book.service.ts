@@ -41,4 +41,16 @@ export class BookService {
   public searchBooks(query: string): Observable<any> {
     return this.api.get<any>(`volumes?q=${encodeURIComponent(query)}&maxResults=20`);
   }
+
+  public getBooksByAuthor(author: string): Observable<any> {
+    return this.api.get<any>(`volumes?q=inauthor:${encodeURIComponent(author)}&maxResults=6&orderBy=relevance`);
+  }
+
+  public getSimilarBooks(category: string): Observable<any> {
+    return this.api.get<any>(`volumes?q=subject:${encodeURIComponent(category)}&maxResults=8&orderBy=relevance`);
+  }
+
+  public getBooksByGenre(genre: string, startIndex = 0): Observable<any> {
+    return this.api.get<any>(`volumes?q=subject:${encodeURIComponent(genre)}&maxResults=20&startIndex=${startIndex}&orderBy=relevance`);
+  }
 }

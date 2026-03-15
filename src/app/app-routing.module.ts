@@ -17,6 +17,11 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/wishlist/wishlist.module').then((m) => m.WishlistModule),
   },
+  {
+    path: 'genre/:name',
+    loadChildren: () =>
+      import('./pages/genre/genre.module').then((m) => m.GenreModule),
+  },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 

@@ -1,0 +1,52 @@
+<section
+  class="app-x-margin py-5"
+  (scrolled)="onScroll()"
+  [infiniteScrollDisabled]="pending || noMoreData"
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="50"
+  infinite-scroll
+>
+  <h1 class="fs-36 fw-600 mb-4">
+    <i class="bi bi-collection me-2 text-primary"></i>{{ displayName }}
+  </h1>
+
+  <!-- Loading skeleton -->
+  <div *ngIf="pending && books.length === 0" class="row g-3">
+    <div *ngFor="let i of skeletonArray" class="col-6 col-sm-4 col-md-3 col-lg-2 placeholder-glow">
+      <div class="placeholder rounded w-100" style="height: 200px;"></div>
+      <div class="placeholder rounded mt-2" style="width: 80%; height: 14px;"></div>
+      <div class="placeholder rounded mt-1" style="width: 50%; height: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- Book grid -->
+  <div *ngIf="books.length > 0" class="row g-3">
+    <div *ngFor="let book of books" class="col-6 col-sm-4 col-md-3 col-lg-2">
+      <div class="genre-book-card clickable" [routerLink]="['/book', book.id]">
+        <img
+          [src]="getThumbnail(book)"
+          [alt]="book.volumeInfo?.title"
+          #img
+          (error)="img.src = 'assets/img/book3.png'"
+          class="rounded w-100"
+          style="height: 200px; object-fit: cover;"
+        />
+        <div class="mt-2">
+          <div class="fs-14 fw-600 book-name">{{ book.volumeInfo?.title }}</div>
+          <div class="fs-12 text-muted mt-1">{{ book.volumeInfo?.authors?.[0] }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load more spinner -->
+  <div *ngIf="pending && books.length > 0" class="my-4">
+    <app-page-loader></app-page-loader>
+  </div>
+
+  <!-- End of results -->
+  <div *ngIf="noMoreData && books.length > 0" class="text-center text-muted mt-4 fs-14">
+    No more books to load
+  </div>
+</section>
+<app-my-footer></app-my-footer>

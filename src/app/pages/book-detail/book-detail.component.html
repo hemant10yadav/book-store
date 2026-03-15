@@ -37,6 +37,7 @@
         style="width: 100%; max-width: 280px; height: auto;"
       />
       <div class="mt-4 d-flex flex-column gap-2">
+        <!-- Wishlist -->
         <button
           class="bg-transparent blue w-100 mt-0"
           style="height: 40px; border: 2px solid #3b72ff; border-radius: 8px; cursor: pointer;"
@@ -46,6 +47,18 @@
           <i [class]="isWishlisted ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'"></i>
           {{ isWishlisted ? 'Wishlisted' : 'Add to Wishlist' }}
         </button>
+
+        <!-- Share -->
+        <button
+          class="btn btn-outline-secondary"
+          (click)="share()"
+          type="button"
+        >
+          <i class="bi bi-share me-2"></i>
+          {{ shareSuccess ? 'Link Copied!' : 'Share' }}
+        </button>
+
+        <!-- Read Preview -->
         <a
           *ngIf="book.volumeInfo?.previewLink"
           [href]="book.volumeInfo.previewLink"
@@ -60,7 +73,7 @@
 
     <!-- Info -->
     <div class="col-md-9 col-lg-10">
-      <h1 class="fs-32 fw-700">{{ book.volumeInfo?.title }}</h1>
+      <h1 class="fw-700" style="font-size: 2rem;">{{ book.volumeInfo?.title }}</h1>
       <div *ngIf="book.volumeInfo?.authors?.length" class="text-muted fs-16 mt-1">
         by {{ book.volumeInfo.authors.join(', ') }}
       </div>
@@ -72,8 +85,22 @@
         ></app-rating>
       </div>
 
+      <!-- Reading Status -->
+      <div class="mt-3 d-flex gap-2 flex-wrap">
+        <button
+          *ngFor="let s of readingStatusOptions"
+          class="btn btn-sm"
+          [class.btn-primary]="currentReadingStatus === s.val"
+          [class.btn-outline-secondary]="currentReadingStatus !== s.val"
+          (click)="setReadingStatus(s.val)"
+          type="button"
+        >
+          <i [class]="'bi ' + s.icon + ' me-1'"></i>{{ s.label }}
+        </button>
+      </div>
+
       <div *ngIf="book.volumeInfo?.description" class="mt-4">
-        <p class="fs-15 lh-base text-secondary" [innerHTML]="book.volumeInfo.description"></p>
+        <p class="lh-base text-secondary" style="font-size: 15px;" [innerHTML]="book.volumeInfo.description"></p>
       </div>
 
       <div class="mt-4 row g-3">
@@ -90,16 +117,61 @@
           <div class="fs-14 fw-600">{{ book.volumeInfo.pageCount }}</div>
         </div>
         <div *ngIf="book.volumeInfo?.categories?.length" class="col-12">
-          <div class="fs-12 text-muted">Categories</div>
-          <div class="d-flex gap-2 flex-wrap mt-1">
-            <span
+          <div class="fs-12 text-muted mb-1">Categories</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <a
               *ngFor="let cat of book.volumeInfo.categories"
-              class="badge bg-lightBlue text-dark fs-12 p-2"
-            >{{ cat }}</span>
+              [routerLink]="['/genre', cat.split('/')[0].trim().toLowerCase().replace(' ', '-')]"
+              class="badge bg-lightBlue text-primary fs-12 p-2 text-decoration-none"
+            >{{ cat }}</a>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-<app-my-footer></app-my-footer>
+
+<!-- YouTube Trailer -->
+<section *ngIf="youtubeVideoUrl" class="app-x-margin mt-2 pb-4">
+  <h2 class="fs-24 fw-600 mb-3">Book Trailer</h2>
+  <div class="ratio ratio-16x9" style="max-width: 720px;">
+    <iframe
+      [src]="youtubeVideoUrl"
+      title="Book trailer"
+      allowfullscreen
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    ></iframe>
+  </div>
+</section>
+
+<!-- More by this Author -->
+<section *ngIf="authorBooks.length" class="mt-4 pb-2">
+  <div class="section">
+    <div class="title">More by {{ book?.volumeInfo?.authors?.[0] }}</div>
+    <div class="mt-3">
+      <app-hemant-slider [gap]="'2rem'">
+        <ng-container *ngFor="let b of authorBooks">
+          <app-book-widget [book]="b"></app-book-widget>
+        </ng-container>
+      </app-hemant-slider>
+    </div>
+  </div>
+</section>
+
+<!-- Similar Books -->
+<section *ngIf="similarBooks.length" class="mt-4 pb-2">
+  <div class="section">
+    <div class="title">Similar Books</div>
+    <div class="mt-3">
+      <app-hemant-slider [gap]="'2rem'">
+        <ng-container *ngFor="let b of similarBooks">
+          <app-book-widget [book]="b"></app-book-widget>
+        </ng-container>
+      </app-hemant-slider>
+    </div>
+  </div>
+</section>
+
+<div class="mt-5">
+  <app-my-footer></app-my-footer>
+</div>

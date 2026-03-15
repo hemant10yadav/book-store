@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { BookService } from '../../service/book.service';
+import { ThemeService } from '../../service/theme.service';
 import { debounceTime, distinctUntilChanged, filter, fromEvent } from 'rxjs';
 
 @Component({
@@ -8,7 +9,10 @@ import { debounceTime, distinctUntilChanged, filter, fromEvent } from 'rxjs';
   styleUrls: ['./navigation-bar.component.scss'],
 })
 export class NavigationBarComponent implements AfterViewInit {
-  constructor(private bookService: BookService) {}
+  constructor(
+    private bookService: BookService,
+    public themeService: ThemeService,
+  ) {}
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
@@ -19,6 +23,10 @@ export class NavigationBarComponent implements AfterViewInit {
 
   public closeNav(nav: HTMLElement): void {
     nav.classList.remove('show');
+  }
+
+  public toggleTheme(): void {
+    this.themeService.toggle();
   }
 
   searchItems(event: KeyboardEvent): void {

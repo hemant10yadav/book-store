@@ -74,17 +74,14 @@
             routerLinkActive="activeLink"
             routerLink="/"
             [routerLinkActiveOptions]="{ exact: true }"
-          >
-            Home</a
-          >
+          >Home</a>
         </li>
         <li class="nav-item" style="width: 116px">
           <a
             class="nav-link fs-14 fw-600 text-dark"
             routerLinkActive="activeLink"
             routerLink="/browse-by-age"
-            >Browse Library</a
-          >
+          >Browse Library</a>
         </li>
         <li class="nav-item hide-collapse">
           <a class="nav-link"><span class="separator"></span></a>
@@ -97,6 +94,17 @@
           >
             <i class="bi bi-heart me-1"></i>Wishlist
           </a>
+        </li>
+        <!-- Dark mode toggle -->
+        <li class="nav-item hide-collapse">
+          <button
+            class="btn btn-link nav-link px-2"
+            (click)="toggleTheme()"
+            [title]="themeService.isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+            type="button"
+          >
+            <i [class]="themeService.isDark ? 'bi bi-sun-fill fs-18' : 'bi bi-moon-fill fs-18'"></i>
+          </button>
         </li>
         <li class="nav-item hide-collapse">
           <a class="nav-link" href="#"

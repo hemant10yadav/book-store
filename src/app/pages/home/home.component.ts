@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ContentService } from '../../service/content.service';
 import { BookService } from '../../service/book.service';
+import { RecentlyViewedService } from '../../service/recently-viewed.service';
 
 @Component({
   selector: 'app-home',
@@ -36,11 +37,25 @@ export class HomeComponent implements OnInit {
     { label: 'Classic Literature', subject: 'classics', books: [], loading: true, error: false },
   ];
 
+  public genres = [
+    { name: 'Fiction', slug: 'fiction' },
+    { name: 'Mystery', slug: 'mystery' },
+    { name: 'Fantasy', slug: 'fantasy' },
+    { name: 'Romance', slug: 'romance' },
+    { name: 'Biography', slug: 'biography' },
+    { name: 'History', slug: 'history' },
+    { name: 'Thriller', slug: 'thriller' },
+    { name: 'Adventure', slug: 'adventure' },
+    { name: 'Science', slug: 'science' },
+    { name: "Children's", slug: 'children' },
+  ];
+
   public skeletonArray = [1, 2, 3, 4, 5, 6];
 
   constructor(
     private cs: ContentService,
     private bookService: BookService,
+    private recentlyViewedService: RecentlyViewedService,
   ) {}
 
   public ngOnInit(): void {
@@ -117,6 +132,10 @@ export class HomeComponent implements OnInit {
         },
       });
     });
+  }
+
+  get recentlyViewedBooks(): any[] {
+    return this.recentlyViewedService.getAll();
   }
 
   public getCalculatedValue(smallScreenValue: any, largeScreenValue: any): any {

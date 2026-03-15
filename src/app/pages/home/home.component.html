@@ -39,6 +39,20 @@
     </app-hemant-slider>
   </div>
 
+  <!-- Browse by Genre -->
+  <div class="section mt-5">
+    <div class="title">Browse by Genre</div>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <a
+        *ngFor="let genre of genres"
+        [routerLink]="['/genre', genre.slug]"
+        class="genre-chip"
+      >
+        {{ genre.name }}
+      </a>
+    </div>
+  </div>
+
   <!-- Top 10 Books -->
   <div class="section mt-5">
     <div class="title">Top 10 Books</div>
@@ -132,5 +146,17 @@
       </div>
     </div>
   </ng-container>
+
+  <!-- Recently Viewed -->
+  <div *ngIf="recentlyViewedBooks.length" class="section mt-5">
+    <div class="title">Recently Viewed</div>
+    <div class="mt-2">
+      <app-hemant-slider [gap]="getCalculatedValue('1rem', '2rem')">
+        <ng-container *ngFor="let book of recentlyViewedBooks">
+          <app-book-widget [book]="book"></app-book-widget>
+        </ng-container>
+      </app-hemant-slider>
+    </div>
+  </div>
 </section>
 <app-my-footer></app-my-footer>

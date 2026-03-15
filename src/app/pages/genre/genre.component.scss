@@ -1,0 +1,9 @@
+.genre-book-card {
+  border-radius: 12px;
+  padding: 8px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #edf2ff;
+  }
+}

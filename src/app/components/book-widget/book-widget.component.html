@@ -1,5 +1,9 @@
 <section>
-  <div [ngClass]="mode" class="widget px-2 py-3 clickable">
+  <div
+    [ngClass]="mode"
+    class="widget px-2 py-3 clickable"
+    [routerLink]="book?.id ? ['/book', book.id] : null"
+  >
     <div *ngIf="index" class="widget-number d-none d-sm-block">
       <div class="position-relative">
         <div class="position-absolute text-danger white-num top-0 fs-130 jua">
@@ -12,27 +16,27 @@
     </div>
     <div [ngClass]="[!index ? 'start-0' : 'index', mode]" class="widget-body">
       <img
-        ngNoValidate
         draggable="false"
         #img
         (error)="img.src = 'assets/img/book3.png'"
-        [ngSrc]="book.volumeInfo.imageLinks.thumbnail"
+        [src]="thumbnail"
         alt="book"
         height="194"
         width="170"
       />
       <div class="p-2">
-        <div [title]="book.name" class="mt-2 fs-16 fw-600 book-name">
-          {{ book.volumeInfo.title }}
+        <div [title]="book.volumeInfo?.title" class="mt-2 fs-16 fw-600 book-name">
+          {{ book.volumeInfo?.title }}
         </div>
         <div class="mt-1">
           <app-rating
-            [ratings]="book.volumeInfo.averageRating"
-            [user]="book.volumeInfo.ratingsCount"
+            [ratings]="book.volumeInfo?.averageRating?.toString() || ''"
+            [user]="book.volumeInfo?.ratingsCount || 0"
           ></app-rating>
         </div>
         <div class="widget-button">
           <app-wish-list-button
+            [book]="book"
             [buttonWidth]="'w-100'"
             [color]="mode === 'dark' ? 'white' : 'blue'"
             [topMargin]="'mt-3'"

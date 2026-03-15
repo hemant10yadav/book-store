@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Book } from '../../../utils/types';
 
 @Component({
   selector: 'app-search-widget',
@@ -7,7 +6,10 @@ import { Book } from '../../../utils/types';
   styleUrls: ['./search-widget.component.scss'],
 })
 export class SearchWidgetComponent {
-  @Input()
-  public book!: Book;
-  public categories: any;
+  @Input() book!: any;
+
+  get thumbnail(): string {
+    const url = this.book?.volumeInfo?.imageLinks?.thumbnail;
+    return url ? url.replace('http:', 'https:') : 'assets/img/book3.png';
+  }
 }

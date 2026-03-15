@@ -7,6 +7,16 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/home/home.module').then((m) => m.HomeModule),
   },
+  {
+    path: 'book/:id',
+    loadChildren: () =>
+      import('./pages/book-detail/book-detail.module').then((m) => m.BookDetailModule),
+  },
+  {
+    path: 'wishlist',
+    loadChildren: () =>
+      import('./pages/wishlist/wishlist.module').then((m) => m.WishlistModule),
+  },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 

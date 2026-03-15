@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  Book,
-  BookCategory,
-  NewArrival,
-  RestCategoryData,
-} from '../../../utils/types';
 import { ContentService } from '../../service/content.service';
 import { BookService } from '../../service/book.service';
+import { NewArrival } from '../../../utils/types';
 
 @Component({
   selector: 'app-home',
@@ -14,30 +9,34 @@ import { BookService } from '../../service/book.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  private age = 5;
-  public topSellerBooks!: any[];
-  public popularBooks!: Book[];
-  public genreBooks!: Book[];
-  public teachersPick!: Book[];
   public window = window;
   public ageGroup = this.cs.ageGroup;
-  public mustReads!: BookCategory[];
+  public newArrivals: NewArrival[] = this.cs.newArrivals;
 
-  public data: {
-    popular: Book[];
-    top: Book[];
-    elephant: Book[];
-    peppa: Book[];
-    new: Book[];
-    best: Book[];
-  } = {
-    popular: [],
-    top: [],
-    elephant: [],
-    peppa: [],
-    new: [],
-    best: [],
-  };
+  public topSellerBooks: any[] = [];
+  public popularBooks: any[] = [];
+  public teachersPick: any[] = [];
+
+  public loadingTopSeller = true;
+  public loadingPopular = true;
+  public loadingTeachersPick = true;
+  public errorTopSeller = false;
+  public errorPopular = false;
+  public errorTeachersPick = false;
+
+  public mustReadSections: Array<{
+    label: string;
+    subject: string;
+    books: any[];
+    loading: boolean;
+    error: boolean;
+  }> = [
+    { label: 'Adventure Books', subject: 'adventure', books: [], loading: true, error: false },
+    { label: 'Science Fiction', subject: 'science+fiction', books: [], loading: true, error: false },
+    { label: 'Classic Literature', subject: 'classics', books: [], loading: true, error: false },
+  ];
+
+  public skeletonArray = [1, 2, 3, 4, 5, 6];
 
   constructor(
     private cs: ContentService,
@@ -47,75 +46,75 @@ export class HomeComponent implements OnInit {
   public ngOnInit(): void {
     this.getTopSellerBooks();
     this.getPopularBooks();
-    //this.getGenreBooks();
-    this.getMustReadBooks();
     this.getTeachersPick();
-    this.data.best = this.cs.getBooks().slice(0, 12);
-    this.data.new = this.cs.getBooks();
-    this.data.peppa = this.cs.getBooks().slice(0, 10);
-    this.data.elephant = this.cs.getBooks();
-    this.data.top = this.cs.getBooks().slice(0, 10);
-    this.data.popular = this.cs.getBooks().slice(0, 15);
+    this.loadMustReadSections();
   }
 
   public getNewArrivals(): NewArrival[] {
-    return this.cs.newArrivals;
+    return this.newArrivals;
   }
+
   public getTopSellerBooks(): void {
-    this.bookService.getTopSellerBooks(this.age).subscribe({
-      next: (res: any) =>{
-        console.log("topseller");
-        console.log("@@@@@");
-        
-        this.topSellerBooks = res.items
-        console.log("topseller");
-        console.log(this.topSellerBooks);
+    this.loadingTopSeller = true;
+    this.errorTopSeller = false;
+    this.bookService.getTopSellerBooks().subscribe({
+      next: (res: any) => {
+        this.topSellerBooks = res.items || [];
+        this.loadingTopSeller = false;
       },
-      error: (err) => console.log(err),
+      error: () => {
+        this.errorTopSeller = true;
+        this.loadingTopSeller = false;
+      },
     });
   }
 
   private getPopularBooks(): void {
-    this.bookService.getPopularBooks(this.age).subscribe({
-      next: (res: any) =>
-        (this.popularBooks = res.items),
-      error: (err) => console.log(err),
-    });
-  }
-
-  private getGenreBooks(): void {
-    this.bookService.getBooksPickByTeachers(this.age).subscribe({
-      next: (res: any) =>
-        (this.genreBooks = res.items),
-      error: (err) => console.log(err),
-    });
-  }
-  private getMustReadBooks(): void {
-    this.bookService.getMustReadBooks(this.age).subscribe({
-      next: (res: any) => (this.mustReads = res.items),
-      error: (err) => console.log(err),
+    this.bookService.getPopularBooks().subscribe({
+      next: (res: any) => {
+        this.popularBooks = res.items || [];
+        this.loadingPopular = false;
+      },
+      error: () => {
+        this.errorPopular = true;
+        this.loadingPopular = false;
+      },
     });
   }
 
   private getTeachersPick(): void {
-    this.bookService.getBooksPickByTeachers(this.age).subscribe({
-      next: (res: any) =>
-        (this.teachersPick = res.items),
-      error: (err) => console.log(err),
+    this.bookService.getTeachersPick().subscribe({
+      next: (res: any) => {
+        this.teachersPick = res.items || [];
+        this.loadingTeachersPick = false;
+      },
+      error: () => {
+        this.errorTeachersPick = true;
+        this.loadingTeachersPick = false;
+      },
     });
   }
 
-  private getScreenObject(): Screen {
-    return window.screen;
+  private loadMustReadSections(): void {
+    this.mustReadSections.forEach((section) => {
+      this.bookService.getMustReadBooks(section.subject).subscribe({
+        next: (res: any) => {
+          section.books = res.items || [];
+          section.loading = false;
+        },
+        error: () => {
+          section.error = true;
+          section.loading = false;
+        },
+      });
+    });
   }
 
   public getCalculatedValue(smallScreenValue: any, largeScreenValue: any): any {
-    return this.getScreenObject()?.width < 600
-      ? smallScreenValue
-      : largeScreenValue;
+    return window.screen.width < 600 ? smallScreenValue : largeScreenValue;
   }
 
   public getScrollPerClick(): number {
-    return this.getScreenObject()?.width / 2;
+    return window.screen.width / 2;
   }
 }

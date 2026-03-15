@@ -12,10 +12,11 @@ export class NavigationBarComponent implements AfterViewInit {
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
-  public searchResult: any;
+  public searchResult: any[] = [];
   public searchQuery: string = '';
   public focus = false;
   public searching = false;
+
   public closeNav(nav: HTMLElement): void {
     nav.classList.remove('show');
   }
@@ -23,8 +24,13 @@ export class NavigationBarComponent implements AfterViewInit {
   searchItems(event: KeyboardEvent): void {
     this.searching = true;
     this.bookService.searchBooks(this.searchQuery).subscribe({
-      next: (results) => (this.searchResult = results.book_set),
-      complete: () => (this.searching = false),
+      next: (results: any) => {
+        this.searchResult = results.items || [];
+        this.searching = false;
+      },
+      error: () => {
+        this.searching = false;
+      },
     });
   }
 
@@ -41,6 +47,7 @@ export class NavigationBarComponent implements AfterViewInit {
   }
 
   public search(): void {
-    this.searchResult = null;
+    this.searchResult = [];
+    this.searchQuery = '';
   }
 }

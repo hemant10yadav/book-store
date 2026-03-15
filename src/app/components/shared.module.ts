@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { NewArrivalWidgetComponent } from './new-arrival-widget/new-arrival-widget.component';
 import { RatingComponent } from './rating/rating.component';
 import { WishListButtonComponent } from './wish-list-button/wish-list-button.component';
@@ -34,8 +35,9 @@ import { SearchWidgetComponent } from './search-widget/search-widget.component';
     PopularWidgetComponent,
     AppFooterComponent,
     PageLoaderComponent,
-    SearchWidgetComponent
+    SearchWidgetComponent,
+    RouterModule,
   ],
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [CommonModule, NgOptimizedImage, RouterModule],
 })
 export class SharedModule {}

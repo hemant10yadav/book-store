@@ -19,7 +19,8 @@ export class ApiService {
     if (queryParams != null) {
       url = this.addQueryParams(url, queryParams);
     }
-    return this.http.get<U>(`${this.apiUrl}${url}&key=${environment.apiKey}`, { headers: this.headers });
+    const sep = url.includes('?') ? '&' : '?';
+    return this.http.get<U>(`${this.apiUrl}${url}${sep}key=${environment.apiKey}`, { headers: this.headers });
   }
 
   public put<U>(url: string, data: Object): Observable<U> {

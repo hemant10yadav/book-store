@@ -1,15 +1,14 @@
 <section class="pb-5">
+  <!-- New Arrivals Banner -->
   <div class="mt-4 d-none d-sm-block">
     <app-hemant-slider [width]="window.screen.width / 2">
       <ng-container *ngFor="let arrival of getNewArrivals(); index as i">
-        <app-new-arrival-widget
-          [index]="i"
-          [arrival]="arrival"
-        ></app-new-arrival-widget>
+        <app-new-arrival-widget [index]="i" [arrival]="arrival"></app-new-arrival-widget>
       </ng-container>
     </app-hemant-slider>
   </div>
 
+  <!-- Browse by Age Group -->
   <div class="mt-0 mt-sm-5 gradient px-3">
     <app-hemant-slider>
       <div>
@@ -26,12 +25,8 @@
               [src]="obj.imageSrc"
               [height]="obj.height"
             />
-            <div
-              *ngFor="let age of obj.ageGroup"
-              class="age-box d-flex mt-auto gap-3"
-            >
-              <app-age-widget [lowerLimit]="age" [upperLimit]="age + 1">
-              </app-age-widget>
+            <div *ngFor="let age of obj.ageGroup" class="age-box d-flex mt-auto gap-3">
+              <app-age-widget [lowerLimit]="age" [upperLimit]="age + 1"></app-age-widget>
             </div>
           </ng-container>
         </div>
@@ -39,16 +34,27 @@
     </app-hemant-slider>
   </div>
 
-  <div *ngIf="topSellerBooks" class="section mt-5">
+  <!-- Top 10 Books -->
+  <div class="section mt-5">
     <div class="title">Top 10 Books</div>
-    <div>
+    <div *ngIf="loadingTopSeller" class="d-flex gap-3 ms-3 mt-2 overflow-hidden">
+      <div *ngFor="let i of skeletonArray" class="placeholder-glow flex-shrink-0">
+        <div class="placeholder rounded" style="width: 170px; height: 240px;"></div>
+        <div class="placeholder rounded mt-2" style="width: 120px; height: 14px;"></div>
+      </div>
+    </div>
+    <div *ngIf="errorTopSeller" class="ms-3 mt-2 text-muted">
+      <i class="bi bi-exclamation-circle me-2"></i>Failed to load.
+      <span class="clickable text-primary ms-2" (click)="getTopSellerBooks()">Retry</span>
+    </div>
+    <div *ngIf="!loadingTopSeller && !errorTopSeller">
       <app-hemant-slider
         [gap]="getCalculatedValue('1rem', '5rem')"
         [width]="window.screen.width / 2"
       >
         <ng-container *ngFor="let book of topSellerBooks; index as i">
           <app-book-widget
-            [index]="getCalculatedValue(null, i+1)"
+            [index]="getCalculatedValue(null, i + 1)"
             [book]="book"
           ></app-book-widget>
         </ng-container>
@@ -56,16 +62,22 @@
     </div>
   </div>
 
+  <!-- Popular Series + Teachers Pick -->
   <div class="popularSeries mt-3">
     <div class="section pt-6">
       <div class="title text-white">Popular Series</div>
-      <div class="mt-5">
+      <div *ngIf="loadingPopular" class="d-flex gap-3 ms-3 mt-5 overflow-hidden">
+        <div *ngFor="let i of skeletonArray" class="placeholder-glow flex-shrink-0">
+          <div class="placeholder rounded" style="width: 170px; height: 240px; opacity: 0.3;"></div>
+        </div>
+      </div>
+      <div *ngIf="errorPopular" class="ms-3 mt-5 text-white-50">
+        <i class="bi bi-exclamation-circle me-2"></i>Failed to load popular series.
+      </div>
+      <div *ngIf="!loadingPopular && !errorPopular" class="mt-5">
         <app-hemant-slider [gap]="getCalculatedValue('1rem', '3rem')">
-          <ng-container *ngFor="let book of popularBooks; index as i">
-            <app-popular-widget
-              [book]="book"
-              [mode]="'dark'"
-            ></app-popular-widget>
+          <ng-container *ngFor="let book of popularBooks">
+            <app-popular-widget [book]="book" [mode]="'dark'"></app-popular-widget>
           </ng-container>
         </app-hemant-slider>
       </div>
@@ -75,9 +87,17 @@
 
     <div class="section mt-5">
       <div class="title text-white">Teachers Pick</div>
-      <div class="mt-2">
+      <div *ngIf="loadingTeachersPick" class="d-flex gap-3 ms-3 mt-2 overflow-hidden">
+        <div *ngFor="let i of skeletonArray" class="placeholder-glow flex-shrink-0">
+          <div class="placeholder rounded" style="width: 170px; height: 240px; opacity: 0.3;"></div>
+        </div>
+      </div>
+      <div *ngIf="errorTeachersPick" class="ms-3 mt-2 text-white-50">
+        <i class="bi bi-exclamation-circle me-2"></i>Failed to load teachers pick.
+      </div>
+      <div *ngIf="!loadingTeachersPick && !errorTeachersPick" class="mt-2">
         <app-hemant-slider [gap]="getCalculatedValue('1rem', '2rem')">
-          <ng-container *ngFor="let book of teachersPick; index as i">
+          <ng-container *ngFor="let book of teachersPick">
             <app-book-widget [book]="book" [mode]="'dark'"></app-book-widget>
           </ng-container>
         </app-hemant-slider>
@@ -85,19 +105,27 @@
     </div>
   </div>
 
-  <ng-container *ngIf="mustReads">
-    <ng-container *ngFor="let category of mustReads">
-      <div *ngIf="category.books.length" class="section mt-5">
-        <div class="title">{{ category.category }}</div>
-        <div class="mt-2">
-          <app-hemant-slider [gap]="getCalculatedValue('1rem', '2rem')">
-            <ng-container *ngFor="let book of category.books; index as i">
-              <app-book-widget [book]="book"></app-book-widget>
-            </ng-container>
-          </app-hemant-slider>
+  <!-- Must Read Sections -->
+  <ng-container *ngFor="let section of mustReadSections">
+    <div class="section mt-5">
+      <div class="title">{{ section.label }}</div>
+      <div *ngIf="section.loading" class="d-flex gap-3 ms-3 mt-2 overflow-hidden">
+        <div *ngFor="let i of skeletonArray" class="placeholder-glow flex-shrink-0">
+          <div class="placeholder rounded" style="width: 170px; height: 240px;"></div>
+          <div class="placeholder rounded mt-2" style="width: 100px; height: 14px;"></div>
         </div>
       </div>
-    </ng-container>
+      <div *ngIf="!section.loading && section.error" class="ms-3 mt-2 text-muted">
+        <i class="bi bi-exclamation-circle me-2"></i>Failed to load {{ section.label }}.
+      </div>
+      <div *ngIf="!section.loading && !section.error && section.books.length" class="mt-2">
+        <app-hemant-slider [gap]="getCalculatedValue('1rem', '2rem')">
+          <ng-container *ngFor="let book of section.books">
+            <app-book-widget [book]="book"></app-book-widget>
+          </ng-container>
+        </app-hemant-slider>
+      </div>
+    </div>
   </ng-container>
 </section>
 <app-my-footer></app-my-footer>

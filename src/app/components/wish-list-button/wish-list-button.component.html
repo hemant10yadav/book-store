@@ -1,8 +1,9 @@
 <button
   class="bg-transparent"
   [ngClass]="[buttonWidth, color, topMargin]"
+  (click)="toggle($event)"
   type="button"
 >
-  <i class="bi bi-heart"></i>
-  Add to Wishlist
+  <i [class]="isWishlisted ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'"></i>
+  {{ isWishlisted ? 'Wishlisted' : 'Add to Wishlist' }}
 </button>

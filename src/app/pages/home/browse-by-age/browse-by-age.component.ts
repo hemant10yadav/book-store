@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ContentService } from '../../../service/content.service';
-import { Book, BookCategory, RestCategoryData } from '../../../../utils/types';
+import { BookCategory } from '../../../../utils/types';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Params } from '@angular/router';
 import { BookService } from '../../../service/book.service';
@@ -14,13 +14,11 @@ export class BrowseByAgeComponent implements OnInit {
   public activeAge!: { lower: number; upper: number | undefined };
   public lastPageNumberFetched = 0;
 
-  private static BESTSELLER = 'Best Seller - Most Popular';
-
   public window = window;
-  public categories!: BookCategory[];
+  public categories: BookCategory[] = [];
   public pending = true;
   public noMoreData = false;
-  public mustReadCategory!: BookCategory[];
+  public mustReadCategory: BookCategory[] = [];
   public ageGroups = this.cs.ageGroup;
 
   constructor(
@@ -30,11 +28,12 @@ export class BrowseByAgeComponent implements OnInit {
     private bookService: BookService,
   ) {}
 
-  public async ngOnInit() {
-    await this.actRoute.queryParams.subscribe(async (param: Params) => {
+  public ngOnInit() {
+    this.actRoute.queryParams.subscribe((param: Params) => {
       this.lastPageNumberFetched = 0;
       this.categories = [];
       this.mustReadCategory = [];
+      this.noMoreData = false;
       const { age } = param;
       this.activeAge = { lower: 0, upper: undefined };
       this.setAgeValues(age);
@@ -66,47 +65,51 @@ export class BrowseByAgeComponent implements OnInit {
     this.activeAge.upper = 9;
   }
 
+  private getSubjectForAge(lower: number): string {
+    if (lower <= 3) return 'baby+books';
+    if (lower <= 7) return 'picture+books';
+    if (lower <= 11) return 'middle+grade';
+    return 'young+adult';
+  }
+
   public getMustRead() {
-    this.bookService.getMustReadBooks(this.activeAge.lower).subscribe({
-      next: (value: RestCategoryData) =>
-        (this.mustReadCategory = value.book_set),
-      error: (error) => {
-        console.log(error);
-      },
+    const mustReadSubjects = [
+      { label: 'Must Read - Adventure', subject: 'adventure' },
+      { label: 'Must Read - Classics', subject: 'classics' },
+    ];
+    mustReadSubjects.forEach(({ label, subject }) => {
+      this.bookService.getMustReadBooks(subject).subscribe({
+        next: (value: any) => {
+          if (value.items?.length) {
+            this.mustReadCategory.push({ category: label, books: value.items });
+          }
+        },
+        error: () => {},
+      });
     });
   }
 
   public getBooks() {
     this.pending = true;
-    this.bookService
-      .getBrowseSeriesBooks(
-        this.activeAge.lower,
-        this.lastPageNumberFetched + 1,
-      )
-      .subscribe({
-        next: (value: RestCategoryData) => {
-          /*if (!this.categories) {
-            this.categories = value.book_set.sort((a: any, b: any) => {
-              if (a.category === BrowseByAgeComponent.BESTSELLER) {
-                return -1;
-              } else if (b.category === BrowseByAgeComponent.BESTSELLER) {
-                return 1;
-              }
-              return 0;
-            });
-          } else {
-            this.categories.push(...value.book_set);
-          }*/
-          this.categories.push(...value.book_set);
-          this.lastPageNumberFetched++;
-          this.noMoreData = value.success && value.book_set.length < 1;
-          this.pending = false;
-        },
-        error: (err) => {
-          this.pending = false;
-          console.log(err);
-        },
-      });
+    const subject = this.getSubjectForAge(this.activeAge.lower);
+    const startIndex = this.lastPageNumberFetched * 20;
+    this.bookService.getBooksByAgeGroup(subject, startIndex).subscribe({
+      next: (value: any) => {
+        const items: any[] = value.items || [];
+        const label = `Books for Age ${this.getAgeGroup()}`;
+        if (this.categories.length === 0) {
+          this.categories.push({ category: label, books: items });
+        } else {
+          this.categories[0].books.push(...items);
+        }
+        this.lastPageNumberFetched++;
+        this.noMoreData = items.length < 20;
+        this.pending = false;
+      },
+      error: () => {
+        this.pending = false;
+      },
+    });
   }
 
   public back(): void {

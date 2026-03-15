@@ -1,18 +1,21 @@
-<div [ngClass]="mode" class="widget clickable">
+<div
+  [ngClass]="mode"
+  class="widget clickable"
+  [routerLink]="book?.id ? ['/book', book.id] : null"
+>
   <div class="widget-body">
     <img
-      ngNoValidate
       draggable="false"
       height="194"
       width="170"
       #img
-      [alt]="book.name"
-      [ngSrc]="book.volumeInfo.imageLinks.thumbnail"
       (error)="img.src = 'assets/img/book3.png'"
+      [alt]="book.volumeInfo?.title"
+      [src]="thumbnail"
     />
     <div class="mt-2">
-      <div class="fs-16 book-name">{{ book.volumeInfo.title }}</div>
-      <span class="fs-14 mt-3 d-block">{{ book.volumeInfo.ratingsCount }} books</span>
+      <div class="fs-16 book-name">{{ book.volumeInfo?.title }}</div>
+      <span class="fs-14 mt-3 d-block text-muted">{{ book.volumeInfo?.authors?.[0] }}</span>
     </div>
   </div>
 </div>

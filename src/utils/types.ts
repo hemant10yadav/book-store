@@ -21,7 +21,7 @@ export type Book = {
 };
 
 export type BookCategory = {
-  books: Book[];
+  books: any[];
   category?: string;
   genre?: string;
 };
@@ -40,3 +40,29 @@ export class Predicate {
     this.value = value;
   }
 }
+
+export type GoogleBook = {
+  id: string;
+  volumeInfo: {
+    title: string;
+    authors?: string[];
+    description?: string;
+    imageLinks?: {
+      thumbnail?: string;
+      smallThumbnail?: string;
+    };
+    averageRating?: number;
+    ratingsCount?: number;
+    categories?: string[];
+    publishedDate?: string;
+    publisher?: string;
+    pageCount?: number;
+    previewLink?: string;
+    infoLink?: string;
+  };
+};
+
+export type GoogleBooksResponse = {
+  totalItems: number;
+  items: GoogleBook[];
+};

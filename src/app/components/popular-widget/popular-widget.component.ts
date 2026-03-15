@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Book } from '../../../utils/types';
 
 @Component({
   selector: 'app-popular-widget',
@@ -9,4 +8,9 @@ import { Book } from '../../../utils/types';
 export class PopularWidgetComponent {
   @Input() public book!: any;
   @Input() mode: 'light' | 'dark' = 'light';
+
+  get thumbnail(): string {
+    const url = this.book?.volumeInfo?.imageLinks?.thumbnail;
+    return url ? url.replace('http:', 'https:') : 'assets/img/book3.png';
+  }
 }

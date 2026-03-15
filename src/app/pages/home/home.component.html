@@ -1,9 +1,14 @@
 <section class="pb-5">
   <!-- New Arrivals Banner -->
   <div class="mt-4 d-none d-sm-block">
-    <app-hemant-slider [width]="window.screen.width / 2">
-      <ng-container *ngFor="let arrival of getNewArrivals(); index as i">
-        <app-new-arrival-widget [index]="i" [arrival]="arrival"></app-new-arrival-widget>
+    <div *ngIf="loadingNewArrivals" class="d-flex gap-4 ms-3 overflow-hidden">
+      <div *ngFor="let i of [1,2,3]" class="placeholder-glow flex-shrink-0">
+        <div class="placeholder rounded" style="width: 700px; height: 290px;"></div>
+      </div>
+    </div>
+    <app-hemant-slider *ngIf="!loadingNewArrivals && newArrivals.length" [width]="window.screen.width / 2">
+      <ng-container *ngFor="let book of newArrivals; index as i">
+        <app-new-arrival-widget [index]="i" [book]="book"></app-new-arrival-widget>
       </ng-container>
     </app-hemant-slider>
   </div>

@@ -8,6 +8,10 @@ import { Observable } from 'rxjs';
 export class BookService {
   constructor(private api: ApiService) {}
 
+  public getNewArrivalBooks(): Observable<any> {
+    return this.api.get<any>('volumes?q=subject:fiction&orderBy=newest&maxResults=6');
+  }
+
   public getTopSellerBooks(): Observable<any> {
     return this.api.get<any>('volumes?q=subject:fiction&orderBy=relevance&maxResults=10');
   }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ContentService } from '../../service/content.service';
 import { BookService } from '../../service/book.service';
-import { NewArrival } from '../../../utils/types';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +10,8 @@ import { NewArrival } from '../../../utils/types';
 export class HomeComponent implements OnInit {
   public window = window;
   public ageGroup = this.cs.ageGroup;
-  public newArrivals: NewArrival[] = this.cs.newArrivals;
+  public newArrivals: any[] = [];
+  public loadingNewArrivals = true;
 
   public topSellerBooks: any[] = [];
   public popularBooks: any[] = [];
@@ -44,14 +44,23 @@ export class HomeComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
+    this.getNewArrivals();
     this.getTopSellerBooks();
     this.getPopularBooks();
     this.getTeachersPick();
     this.loadMustReadSections();
   }
 
-  public getNewArrivals(): NewArrival[] {
-    return this.newArrivals;
+  public getNewArrivals(): void {
+    this.bookService.getNewArrivalBooks().subscribe({
+      next: (res: any) => {
+        this.newArrivals = res.items || [];
+        this.loadingNewArrivals = false;
+      },
+      error: () => {
+        this.loadingNewArrivals = false;
+      },
+    });
   }
 
   public getTopSellerBooks(): void {

@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { NewArrival } from '../../../utils/types';
 
 @Component({
   selector: 'app-new-arrival-widget',
@@ -7,9 +6,11 @@ import { NewArrival } from '../../../utils/types';
   styleUrls: ['./new-arrival-widget.component.scss'],
 })
 export class NewArrivalWidgetComponent {
-  @Input()
-  public arrival!: NewArrival;
+  @Input() public book!: any;
+  @Input() public index = 0;
 
-  @Input()
-  public index = 0;
+  get thumbnail(): string {
+    const url = this.book?.volumeInfo?.imageLinks?.thumbnail;
+    return url ? url.replace('http:', 'https:') : 'assets/img/book3.png';
+  }
 }

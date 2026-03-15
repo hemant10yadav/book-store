@@ -1,29 +1,44 @@
-<section class="widget d-flex align-items-center">
+<section
+  class="widget d-flex align-items-center clickable"
+  [routerLink]="book?.id ? ['/book', book.id] : null"
+>
   <div class="widget-image">
-    <img alt="..." [src]="arrival.image" />
+    <img
+      draggable="false"
+      #img
+      (error)="img.src = 'assets/img/book3.png'"
+      [src]="thumbnail"
+      [alt]="book.volumeInfo?.title"
+      style="height: 280px; width: auto; border-radius: 16px; object-fit: cover;"
+    />
   </div>
   <div
     [ngClass]="index % 2 === 0 ? 'bg-lightBlue' : 'bg-lightPink'"
-    class="widget-inner bg-lightBlue"
+    class="widget-inner"
   >
     <div class="widget-body pe-5">
       <div class="d-flex gap-2">
-        <div class="arrival">{{ arrival.arrival }}</div>
-        <div class="age-group">{{ arrival.ageGroup }}</div>
+        <div class="arrival">New Arrival</div>
+        <div *ngIf="book.volumeInfo?.categories?.[0]" class="age-group">
+          {{ book.volumeInfo.categories[0] }}
+        </div>
       </div>
-      <div class="fs-24 fw-600 title">{{ arrival.title }}</div>
+      <div class="fs-24 fw-600 title">{{ book.volumeInfo?.title }}</div>
+      <div *ngIf="book.volumeInfo?.authors?.length" class="fs-14 text-muted mt-1">
+        {{ book.volumeInfo.authors.join(', ') }}
+      </div>
       <app-rating
-        [ratings]="arrival.ratings"
-        [user]="arrival.user"
+        [ratings]="book.volumeInfo?.averageRating?.toString() || ''"
+        [user]="book.volumeInfo?.ratingsCount || 0"
       ></app-rating>
       <div class="mt-1 fs-14">
         <div class="m-0 p-0 text-wrap pe-3">
-          {{ arrival.description }}<span class="fw-600">Read
-                                                        More</span>
+          {{ book.volumeInfo?.description | slice: 0 : 120 }}{{ (book.volumeInfo?.description?.length || 0) > 120 ? '...' : '' }}
+          <span class="fw-600">Read More</span>
         </div>
       </div>
       <div class="widget-button">
-        <app-wish-list-button [topMargin]="'mt-3'"></app-wish-list-button>
+        <app-wish-list-button [book]="book" [topMargin]="'mt-3'"></app-wish-list-button>
       </div>
     </div>
   </div>

@@ -73,7 +73,7 @@
       </div>
 
       <div *ngIf="book.volumeInfo?.description" class="mt-4">
-        <p class="fs-15 lh-base text-secondary">{{ book.volumeInfo.description }}</p>
+        <p class="fs-15 lh-base text-secondary" [innerHTML]="book.volumeInfo.description"></p>
       </div>
 
       <div class="mt-4 row g-3">
